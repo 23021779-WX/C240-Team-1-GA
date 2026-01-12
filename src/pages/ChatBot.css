@@ -236,3 +236,36 @@
   }
 }
 
+.start-chat-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 20px 0;
+  transition: background-color 0.3s;
+}
+
+.start-chat-button:hover {
+  background-color: #45a049;
+}
+
+.flowise-chat-container {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.chat-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.welcome-message {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
