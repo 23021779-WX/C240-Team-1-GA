@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import './ChatBot.css'
 
 function ChatBot() {
@@ -12,33 +12,19 @@ function ChatBot() {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef(null)
 
-  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Handle prefilled questions
-  useEffect(() => {
-    const prefilledQuestion = localStorage.getItem('prefilledQuestion')
-    if (prefilledQuestion) {
-      setInputValue(prefilledQuestion)
-      localStorage.removeItem('prefilledQuestion')
-    }
-  }, [])
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault()
-    if (!inputValue.trim()) return
+  const processMessage = useCallback(async (text) => {
+    if (!text.trim()) return
 
-    const userMessage = { type: 'user', text: inputValue }
-    const currentQuestion = inputValue // Store it before clearing input
-    
+    const userMessage = { type: 'user', text: text }
     setMessages(prev => [...prev, userMessage])
-    setInputValue('')
     setIsLoading(true)
 
     try {
-      // API Call to Flowwise Prediction (Chat) endpoint
       const response = await fetch(
         "https://cloud.flowiseai.com/api/v1/prediction/617939d8-9683-4912-9217-37e0a5cec840",
         {
@@ -47,7 +33,7 @@ function ChatBot() {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            question: currentQuestion
+            question: text
           })
         }
       )
@@ -57,11 +43,9 @@ function ChatBot() {
       }
 
       const data = await response.json()
-      console.log("Flowwise Response:", data)
-
+      
       const botMessage = {
         type: 'bot',
-        // Flowwise typically returns result in data.text
         text: data.text || data.json || "I processed your request but didn't get a text response."
       }
 
@@ -76,7 +60,24 @@ function ChatBot() {
     } finally {
       setIsLoading(false)
     }
+  }, [])
+
+  const handleSendMessage = (e) => {
+    e.preventDefault()
+    if (!inputValue.trim()) return
+    
+    const textToSend = inputValue
+    setInputValue('')
+    processMessage(textToSend)
   }
+
+  useEffect(() => {
+    const prefilledQuestion = localStorage.getItem('prefilledQuestion')
+    if (prefilledQuestion) {
+      localStorage.removeItem('prefilledQuestion')
+      processMessage(prefilledQuestion)
+    }
+  }, [processMessage])
 
   return (
     <div className="chatbot-page">

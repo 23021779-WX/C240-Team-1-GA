@@ -11,11 +11,10 @@ function SampleQuestions({ setCurrentPage }) {
     "Can I have a reaction to cross-contaminated foods?"
   ]
 
-  const handleQuestionClick = (question) => {
-    setCurrentPage('chatbot')
-    // Store the question to be pre-filled in the chat
-    localStorage.setItem('prefilledQuestion', question)
-  }
+const handleQuestionClick = (question) => {
+  localStorage.setItem('prefilledQuestion', question);
+  setCurrentPage('chatbot');
+};
 
   return (
     <section className="sample-questions">

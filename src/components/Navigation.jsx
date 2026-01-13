@@ -8,7 +8,7 @@ function Navigation({ currentPage, setCurrentPage }) {
         <div className="logo-section">
           <div className="logo-placeholder">
             <span className="logo-text">🥗</span>
-            <span className="company-name">NutriGuide</span>
+            <span className="company-name">nomnom-bot</span>
           </div>
         </div>
 
@@ -29,14 +29,14 @@ function Navigation({ currentPage, setCurrentPage }) {
               Chat Bot
             </button>
           </li>
-          <li>
+          {/* <li>
             <button
               className={`nav-link ${currentPage === 'contact' ? 'active' : ''}`}
               onClick={() => setCurrentPage('contact')}
             >
               Contact
             </button>
-          </li>
+          </li> */}
         </ul>
       </div>
     </nav>
