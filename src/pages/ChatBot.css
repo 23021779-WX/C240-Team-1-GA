@@ -1,3 +1,161 @@
+.safety-disclaimer {
+  background-color: #fff4e5; /* Soft warning orange */
+  border-bottom: 1px solid #ffe2b3;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #664d03;
+}
+
+.warning-icon {
+  font-size: 1.2rem;
+}
+
+.safety-disclaimer p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Clear Chat Button in Sidebar */
+.clear-chat-btn {
+  margin-top: auto; /* Pushes button to bottom of sidebar */
+  background: #fff0f0;
+  color: #d93025;
+  border: 1px solid #fadbd8;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.clear-chat-btn:hover {
+  background: #f8d7da;
+  transform: translateY(-2px);
+}
+
+/* Sidebar adjust for button */
+.sidebar {
+  /* ... existing styles ... */
+  display: flex;
+  flex-direction: column;
+}
+
+.chatbot-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+  display: flex; /* Changed to flex for hamburger alignment */
+  align-items: center;
+  position: relative;
+}
+
+.header-text {
+  flex: 1;
+  text-align: center;
+  margin-right: 40px; /* Counter-balance the hamburger width for centering */
+}
+
+.hamburger-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- SIDEBAR DRAWER --- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -320px; /* Completely hidden off-screen */
+  width: 300px;
+  height: 100vh;
+  background: white;
+  z-index: 2000;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+}
+
+.sidebar.open {
+  left: 0; /* Slides in */
+}
+
+.sidebar h3 {
+  color: #333;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.sidebar-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+}
+
+.sidebar-q-btn {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  padding: 0.85rem;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+}
+
+.sidebar-q-btn:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: translateX(5px);
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #999;
+  cursor: pointer;
+}
+
+/* --- OVERLAY --- */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px); /* Makes it look premium */
+  z-index: 1500;
+  animation: fadeIn 0.3s ease;
+}
+
 .chatbot-page {
   flex: 1;
   background-color: #f5f7fa;

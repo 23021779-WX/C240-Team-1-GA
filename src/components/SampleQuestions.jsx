@@ -4,7 +4,7 @@ import './SampleQuestions.css'
 function SampleQuestions({ setCurrentPage }) {
   const questions = [
     "What foods should I avoid if I have an egg allergy?",
-    "I have just eaten a pineapple tart, and my skin started itching. What do I do?",
+    "What foods should I eat to hit my daily iron intake?",
     "What are the symptoms of a nut allergy?",
     "Is gluten-free bread better for me?",
     "What should I do if I suspect a shellfish allergy?",
