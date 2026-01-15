@@ -53,6 +53,14 @@ function Navigation({ currentPage, setCurrentPage }) {
               Allergen Game
             </button>
           </li>
+          <li>
+            <button
+              className={`nav-link ${currentPage === 'mealPlans' ? 'active' : ''}`}
+              onClick={() => setCurrentPage('mealPlans')}
+            >
+              My Meal Plans
+            </button>
+          </li>
         </ul>
       </div>
     </nav>

@@ -6,7 +6,8 @@ import ChatBot from './pages/ChatBot'
 import Contact from './pages/Contact'
 import Questions from './pages/Questions'
 // 1. Import your new page component
-import UnderstandingAllergies from './pages/UnderstandingAllergies' 
+import UnderstandingAllergies from './pages/UnderstandingAllergies'
+import MealPlans from './pages/MealPlans' 
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
@@ -25,6 +26,8 @@ function App() {
       // Make sure the string 'understandingAllergies' matches your Navigation.jsx exactly
       case 'understandingAllergies':
         return <UnderstandingAllergies />
+      case 'mealPlans':
+        return <MealPlans />
       default:
         return <Home setCurrentPage={setCurrentPage} />
     }

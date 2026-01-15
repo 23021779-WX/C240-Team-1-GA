@@ -13,6 +13,11 @@ function ChatBot() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [questionHistory, setQuestionHistory] = useState([])
   const [showHistory, setShowHistory] = useState(false)
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [pendingMealPlan, setPendingMealPlan] = useState(null)
+  const [editingIndex, setEditingIndex] = useState(null)
+  const [editText, setEditText] = useState('')
+  const [showToast, setShowToast] = useState(false)
   const messagesEndRef = useRef(null)
 
   const sampleQuestions = [
@@ -59,6 +64,16 @@ function ChatBot() {
         text: data.text || data.json || "I processed your request but didn't get a text response."
       }
       setMessages(prev => [...prev, botMessage])
+      
+      // Check if the response is a meal plan
+      const responseText = botMessage.text.toLowerCase()
+      if (responseText.includes('meal plan') || 
+          responseText.includes('breakfast') && responseText.includes('lunch') && responseText.includes('dinner') ||
+          responseText.includes('day 1') || responseText.includes('day 2') || responseText.includes('day 3')) {
+        // Show save modal for meal plans
+        setPendingMealPlan(botMessage.text)
+        setShowSaveModal(true)
+      }
     } catch (error) {
       setMessages(prev => [...prev, { 
         type: 'bot', 
@@ -84,6 +99,55 @@ function ChatBot() {
       text: "Hi! I am Nom Nom. I am here to help you eat safely and feel your best. What are we looking at today?"
     }])
     setIsSidebarOpen(false)
+  }
+
+  // Save Meal Plan Function
+  const saveMealPlan = () => {
+    if (!pendingMealPlan) return
+    
+    const existingPlans = JSON.parse(localStorage.getItem('savedMealPlans') || '[]')
+    const newPlan = {
+      content: pendingMealPlan,
+      savedAt: new Date().toISOString()
+    }
+    existingPlans.unshift(newPlan) // Add to beginning
+    localStorage.setItem('savedMealPlans', JSON.stringify(existingPlans))
+    
+    setShowSaveModal(false)
+    setPendingMealPlan(null)
+    
+    // Show toast notification
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  const dismissModal = () => {
+    setShowSaveModal(false)
+    setPendingMealPlan(null)
+  }
+
+  // Edit Message Functions
+  const startEditing = (index, text) => {
+    setEditingIndex(index)
+    setEditText(text)
+  }
+
+  const cancelEditing = () => {
+    setEditingIndex(null)
+    setEditText('')
+  }
+
+  const submitEdit = async (index) => {
+    if (!editText.trim()) return
+
+    // Remove all messages after the edited message
+    const newMessages = messages.slice(0, index)
+    setMessages(newMessages)
+    setEditingIndex(null)
+    setEditText('')
+    
+    // Process the edited message
+    await processMessage(editText)
   }
 
   useEffect(() => {
@@ -145,11 +209,48 @@ function ChatBot() {
           {messages.map((message, index) => (
             <div key={index} className={`message message-${message.type}`}>
               {message.type === 'bot' && <div className="message-avatar">🤖</div>}
-              <div className="message-bubble">
-                {message.text.split('\n').map((line, i) => (
-                  <div key={i}>{line}</div>
-                ))}
-              </div>
+              {editingIndex === index ? (
+                <div className="edit-message-container">
+                  <textarea
+                    className="edit-message-input"
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        submitEdit(index)
+                      }
+                      if (e.key === 'Escape') {
+                        cancelEditing()
+                      }
+                    }}
+                    autoFocus
+                  />
+                  <div className="edit-message-buttons">
+                    <button className="edit-save-btn" onClick={() => submitEdit(index)}>
+                      ✓ Save
+                    </button>
+                    <button className="edit-cancel-btn" onClick={cancelEditing}>
+                      ✕ Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="message-bubble">
+                  {message.text.split('\n').map((line, i) => (
+                    <div key={i}>{line}</div>
+                  ))}
+                  {message.type === 'user' && (
+                    <button 
+                      className="edit-button" 
+                      onClick={() => startEditing(index, message.text)}
+                      title="Edit message"
+                    >
+                      ✏️
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           ))}
           {messages.length === 1 && (
@@ -192,6 +293,32 @@ function ChatBot() {
           </button>
         </form>
       </div>
+
+      {/* Save Meal Plan Modal */}
+      {showSaveModal && (
+        <div className="modal-overlay" onClick={dismissModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>💾 Save Meal Plan?</h2>
+            <p>Would you like to save this meal plan to your collection?</p>
+            <div className="modal-buttons">
+              <button className="modal-btn save-btn" onClick={saveMealPlan}>
+                Yes, Save It!
+              </button>
+              <button className="modal-btn cancel-btn" onClick={dismissModal}>
+                No, Thanks
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="toast-notification">
+          <span className="toast-icon">✓</span>
+          <span className="toast-message">Meal plan saved! View in "My Meal Plans"</span>
+        </div>
+      )}
     </div>
   )
 }
