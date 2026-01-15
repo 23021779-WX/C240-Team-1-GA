@@ -42,7 +42,7 @@ function Navigation({ currentPage, setCurrentPage }) {
               className={`nav-link ${currentPage === 'chatbot' ? 'active' : ''}`}
               onClick={() => setCurrentPage('chatbot')}
             >
-              Chat Bot
+              Nom Bot
             </button>
           </li>
           <li>
