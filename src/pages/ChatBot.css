@@ -207,6 +207,13 @@
   justify-content: center;
 }
 
+.bot-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
 .message-bubble {
   background-color: white;
   padding: 1rem 1.25rem;

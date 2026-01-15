@@ -208,7 +208,11 @@ function ChatBot() {
         <div className="chat-messages">
           {messages.map((message, index) => (
             <div key={index} className={`message message-${message.type}`}>
-              {message.type === 'bot' && <div className="message-avatar">🤖</div>}
+              {message.type === 'bot' && (
+                <div className="message-avatar">
+                  <img src="/nomnom-logo.png" alt="Nom Nom Bot" className="bot-avatar-img" />
+                </div>
+              )}
               {editingIndex === index ? (
                 <div className="edit-message-container">
                   <textarea
@@ -270,7 +274,9 @@ function ChatBot() {
           )}
           {isLoading && (
             <div className="message message-bot">
-              <div className="message-avatar">🤖</div>
+              <div className="message-avatar">
+                <img src="/nomnom-logo.png" alt="Nom Nom Bot" className="bot-avatar-img" />
+              </div>
               <div className="message-bubble loading">
                 <span></span><span></span><span></span>
               </div>
