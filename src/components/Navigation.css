@@ -1,16 +1,16 @@
 .navbar {
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 1rem 0;
+  padding: 1rem 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
 .navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,7 +28,8 @@
   gap: 0.75rem;
   cursor: pointer;
   font-weight: 600;
-  color: #2c5aa0;
+  color: #00bfc3;
+  font-family: 'Poppins', sans-serif;
 }
 
 .logo-text {
@@ -37,7 +38,8 @@
 
 .company-name {
   font-size: 1.25rem;
-  color: #2c5aa0;
+  color: #00bfc3;
+  font-family: 'Poppins', sans-serif;
 }
 
 .nav-menu {
@@ -59,14 +61,14 @@
 }
 
 .nav-link:hover {
-  color: #2c5aa0;
-  background-color: #f0f5ff;
+  color: #00bfc3;
+  background-color: #fff5e6;
 }
 
 .nav-link.active {
-  color: #2c5aa0;
-  background-color: #e8f1ff;
-  border-bottom: 2px solid #2c5aa0;
+  color: #00bfc3;
+  background-color: #fff5e6;
+  border-bottom: 2px solid #00bfc3;
 }
 
 @media (max-width: 768px) {

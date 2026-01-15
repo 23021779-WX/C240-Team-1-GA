@@ -14,7 +14,7 @@ function Navigation({ currentPage, setCurrentPage }) {
               alt="NomNom Bot Logo" 
               className="nav-logo-img" 
             />
-            <span className="company-name">nom nom</span>
+            <span className="company-name">NOM NOM</span>
           </div>
         </div>
 
@@ -27,6 +27,15 @@ function Navigation({ currentPage, setCurrentPage }) {
               Home
             </button>
           </li> 
+
+          <li>
+            <button
+              className={`nav-link ${currentPage === 'questions' ? 'active' : ''}`}
+              onClick={() => setCurrentPage('questions')}
+            >
+              Wellness Tools
+            </button>
+          </li>
 
           <li>
             <button

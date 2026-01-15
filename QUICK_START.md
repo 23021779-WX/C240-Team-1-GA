@@ -1,6 +1,6 @@
-# Quick Start Guide - NutriGuide
+# Quick Start Guide - NOM BOT
 
-Welcome to NutriGuide! This guide will get you up and running in minutes.
+Welcome to NOM BOT! This guide will get you up and running in minutes.
 
 ## 🚀 Getting Started
 
@@ -212,4 +212,4 @@ http://YOUR_IP_ADDRESS:5173
 4. Monitor chatbot conversations and improve responses
 5. Add user authentication for conversation history
 
-Enjoy building with NutriGuide! 🥗
+Enjoy building with NOM BOT! 🥗

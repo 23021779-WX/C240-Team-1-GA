@@ -1,0 +1,186 @@
+.wellness-tools-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.wellness-tools {
+  padding: 5rem 2rem;
+  background-color: #fffaeb;
+}
+
+.tools-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.tools-header h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  color: #2a2929;
+  letter-spacing: -1px;
+}
+
+.wellness-subtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #00bfc3;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+}
+
+.tools-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+.tool-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 191, 195, 0.1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(0, 191, 195, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00bfc3 0%, #ffb06f 100%);
+}
+
+.tool-card:hover {
+  box-shadow: 0 16px 40px rgba(0, 191, 195, 0.2);
+  transform: translateY(-10px);
+  border-color: rgba(0, 191, 195, 0.2);
+}
+
+.tool-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.tool-card:hover .tool-icon {
+  transform: scale(1.1);
+}
+
+.tool-card h3 {
+  color: #2a2929;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+}
+
+.tool-card p {
+  color: #666;
+  line-height: 1.7;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tool-btn {
+  background: linear-gradient(135deg, #00bfc3 0%, #009ba7 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 24px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 1px;
+}
+
+.tool-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 191, 195, 0.3);
+}
+
+.tool-btn:active {
+  transform: translateY(-1px);
+}
+
+.wellness-info {
+  background: linear-gradient(135deg, #2a2929 0%, #1a1a1a 100%);
+  color: white;
+  padding: 6rem 2rem;
+  text-align: center;
+}
+
+.info-content h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+
+.info-content p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+.info-badges {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  font-family: 'Inter', sans-serif;
+}
+
+.info-content h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  opacity: 0.8;
+  font-family: 'Inter', sans-serif;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .tools-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .wellness-tools {
+    padding: 2rem 1rem;
+  }
+
+  .wellness-info {
+    padding: 3rem 1rem;
+  }
+
+  .info-content h2 {
+    font-size: 2rem;
+  }
+}

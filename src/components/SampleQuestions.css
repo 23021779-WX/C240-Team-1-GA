@@ -1,94 +1,98 @@
 .sample-questions {
-  padding: 4rem 2rem;
-  background-color: #fff;
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, #f6fffd 0%, #f4f8ff 100%);
 }
 
 .sample-questions-container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
 .sample-questions h2 {
-  font-size: 2rem;
-  color: #2c5aa0;
+  font-size: 2.2rem;
+  color: #0b4f63;
   margin-bottom: 0.5rem;
   text-align: center;
+  font-family: 'Poppins', sans-serif;
 }
 
 .section-subtitle {
   text-align: center;
-  color: #888;
-  margin-bottom: 2rem;
+  color: #5a6a73;
+  margin-bottom: 2.25rem;
   font-size: 1rem;
 }
 
 .questions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  gap: 1.75rem;
 }
 
 .question-card {
-  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
-  border: 2px solid #e8eef7;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #cdeff1;
+  border-radius: 14px;
+  padding: 1.75rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   text-align: left;
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 150px;
+  min-height: 160px;
+  box-shadow: 0 10px 30px rgba(0, 191, 195, 0.07);
 }
 
 .question-card:hover {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #f0f5ff 0%, #ffffff 100%);
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
-  transform: translateY(-3px);
+  border-color: #00bfc3;
+  box-shadow: 0 16px 40px rgba(0, 191, 195, 0.16);
+  transform: translateY(-4px);
 }
 
 .question-number {
   display: inline-block;
-  background-color: #667eea;
+  background-color: #00bfc3;
   color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
   width: fit-content;
+  letter-spacing: 0.5px;
 }
 
 .question-card p {
-  color: #333;
-  line-height: 1.6;
+  color: #1f2933;
+  line-height: 1.65;
   flex: 1;
   display: flex;
   align-items: center;
+  font-size: 1rem;
 }
 
 .arrow {
-  color: #667eea;
+  color: #ffb06f;
   font-size: 1.2rem;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
+  transition: transform 0.2s ease;
+  margin-top: 0.6rem;
+  font-weight: 700;
 }
 
 .question-card:hover .arrow {
-  transform: translateX(4px);
+  transform: translateX(5px);
 }
 
 @media (max-width: 768px) {
   .sample-questions {
-    padding: 2rem 1rem;
+    padding: 3rem 1rem;
   }
 
   .sample-questions h2 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .questions-grid {

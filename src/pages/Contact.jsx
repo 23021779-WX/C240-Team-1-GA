@@ -44,7 +44,7 @@ function Contact() {
             <div className="info-card">
               <div className="info-icon">📧</div>
               <h3>Email</h3>
-              <p><a href="mailto:support@nutriguide.com">support@nutriguide.com</a></p>
+              <p><a href="mailto:support@nombot.com">support@nombot.com</a></p>
             </div>
 
             <div className="info-card">

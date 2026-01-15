@@ -6,41 +6,59 @@ function Home({ setCurrentPage }) {
   return (
     <div className="home">
       <section className="hero">
-        <div className="hero-content">
-          <h1>Welcome to NutriGuide</h1>
-          <p>Your Personal Dietary & Allergy Assistant</p>
-          <p className="hero-subtitle">
-            Get instant answers to your dietary and allergy-related questions with our AI-powered chatbot.
-          </p>
-          <button
-            className="cta-button"
-            onClick={() => setCurrentPage('chatbot')}
-          >
-            Start Chatting Now
-          </button>
+        <div className="hero-inner">
+          <div className="hero-content">
+            <div className="hero-badge">99.9% Safety Accuracy</div>
+            <h1>Eat with Confidence.</h1>
+            <p className="hero-subtitle">
+              Premium allergy safety and bespoke meal curation. Let our intelligence layer verify every bite.
+            </p>
+            <button
+              className="cta-button"
+              onClick={() => setCurrentPage('chatbot')}
+            >
+              ACCESS ASSISTANT
+            </button>
+          </div>
+
+          <div className="hero-visual">
+            <img
+              src="/hero-foods.jpg"
+              alt="Fresh ingredients representing safe, curated meals"
+              loading="lazy"
+            />
+          </div>
         </div>
       </section>
 
-      <section className="features">
-        <div className="features-container">
-          <div className="feature-card">
-            <div className="feature-icon">🔍</div>
-            <h3>Allergy Detection</h3>
-            <p>Learn about potential allergies and foods to avoid based on your symptoms.</p>
-          </div>
+      <section className="curated-section">
+        <div className="curated-content">
+          <h2>Confidently Curated.</h2>
+          <p>Precision intelligence applied to every culinary choice.</p>
+        </div>
+      </section>
 
-          <div className="feature-card">
-            <div className="feature-icon">🥗</div>
-            <h3>Dietary Guidance</h3>
-            <p>Get personalized dietary recommendations for your specific health needs.</p>
+      <section className="safe-selection">
+        <h2 className="section-title">The Art of Safe Selection</h2>
+        <p className="section-description">
+          We've eliminated the anxiety of ingredient verification. Our system curates bespoke weekly menus that strictly honor your dietary safety profile.
+        </p>
+        <div className="features-grid">
+          <div className="feature-item">
+            <h4>VERIFICATION</h4>
+            <p>Multi-layer safety checks for every recipe in your library.</p>
           </div>
-
-          <div className="feature-card">
-            <div className="feature-icon">💬</div>
-            <h3>Instant Support</h3>
-            <p>Chat with our AI assistant anytime, anywhere for quick answers.</p>
+          <div className="feature-item">
+            <h4>OPTIMIZATION</h4>
+            <p>Nutrient density scaled to your activity level and goals.</p>
           </div>
         </div>
+        <button 
+          className="cta-button"
+          onClick={() => setCurrentPage('chatbot')}
+        >
+          START PLANNING
+        </button>
       </section>
 
       <SampleQuestions setCurrentPage={setCurrentPage} />

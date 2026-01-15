@@ -1,4 +1,4 @@
-# NutriGuide - Dietary & Allergy Chatbot Website
+# NOM BOT - Dietary & Allergy Chatbot Website
 
 A professional, minimalistic React-based website for dietary and allergy guidance with an integrated chatbot assistant.
 

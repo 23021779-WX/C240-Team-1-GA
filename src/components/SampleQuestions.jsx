@@ -8,7 +8,10 @@ function SampleQuestions({ setCurrentPage }) {
     "What are the symptoms of a nut allergy?",
     "Is gluten-free bread better for me?",
     "What should I do if I suspect a shellfish allergy?",
-    "Can I have a reaction to cross-contaminated foods?"
+    "Can I have a reaction to cross-contaminated foods?",
+    "How do I identify hidden allergens on food labels?",
+    "What are safe food substitutes for common allergies?",
+    "How can I plan a balanced allergen-free weekly menu?"
   ]
 
 const handleQuestionClick = (question) => {

@@ -4,6 +4,7 @@ import Navigation from './components/Navigation'
 import Home from './pages/Home'
 import ChatBot from './pages/ChatBot'
 import Contact from './pages/Contact'
+import Questions from './pages/Questions'
 // 1. Import your new page component
 import UnderstandingAllergies from './pages/UnderstandingAllergies' 
 
@@ -14,6 +15,8 @@ function App() {
     switch (currentPage) {
       case 'home':
         return <Home setCurrentPage={setCurrentPage} />
+      case 'questions':
+        return <Questions setCurrentPage={setCurrentPage} />
       case 'chatbot':
         return <ChatBot />
       case 'contact':

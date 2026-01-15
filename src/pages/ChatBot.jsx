@@ -5,7 +5,7 @@ function ChatBot() {
   const [messages, setMessages] = useState([
     {
       type: 'bot',
-      text: "Hello! 👋 I'm your Dietary & Allergy Assistant. How can I help you today?"
+      text: "Hi! I am Nom Nom. I am here to help you eat safely and feel your best. What are we looking at today?"
     }
   ])
   const [inputValue, setInputValue] = useState('')
@@ -14,12 +14,10 @@ function ChatBot() {
   const messagesEndRef = useRef(null)
 
   const sampleQuestions = [
-    "What foods should I avoid if I have an egg allergy?",
-    "Symptoms of a nut allergy?",
-    "Is gluten-free bread better for me?",
-    "How to check for cross-contamination?",
-    "What to do if I suspect a shellfish allergy?",
-    "Hidden names for dairy on labels?"
+    "CREATE A 3-DAY MEAL PLAN",
+    "CHECK FOR HIDDEN NUT ALLERGENS",
+    "HIGH PROTEIN DINNER IDEAS",
+    "SCAN INGREDIENTS LIST"
   ]
 
   useEffect(() => {
@@ -36,7 +34,7 @@ function ChatBot() {
 
     try {
       const response = await fetch(
-        "https://cloud.flowiseai.com/api/v1/prediction/617939d8-9683-4912-9217-37e0a5cec840",
+        "https://cloud.flowiseai.com/api/v1/prediction/4cb1a442-92b0-4fd7-9509-62b00935446d",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -74,7 +72,7 @@ function ChatBot() {
   const clearChat = () => {
     setMessages([{
       type: 'bot',
-      text: "Hello! 👋 I'm your Dietary & Allergy Assistant. How can I help you today?"
+      text: "Hi! I am Nom Nom. I am here to help you eat safely and feel your best. What are we looking at today?"
     }])
     setIsSidebarOpen(false)
   }
@@ -89,60 +87,47 @@ function ChatBot() {
 
   return (
     <div className="chatbot-page">
-      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <button className="close-btn" onClick={() => setIsSidebarOpen(false)}>×</button>
-        <h3>Sample Questions</h3>
-        <div className="sidebar-questions">
-          {sampleQuestions.map((q, i) => (
-            <button key={i} className="sidebar-q-btn" onClick={() => processMessage(q)}>
-              {q}
-            </button>
-          ))}
-        </div>
-        
-        <button className="clear-chat-btn" onClick={clearChat}>
-          🗑️ Clear Conversation
-        </button>
-      </div>
-
-      {isSidebarOpen && <div className="overlay" onClick={() => setIsSidebarOpen(false)}></div>}
-
       <div className="chatbot-container">
         <div className="chatbot-header">
-          <button className="hamburger-btn" onClick={() => setIsSidebarOpen(true)}>☰</button>
-          <div className="header-text">
-            <h2>Dietary Assistant</h2>
-            <p>Powered by NutriGuide AI</p>
+          <div className="header-content">
+            <h1>NOM BOT</h1>
           </div>
-        </div>
-
-        <div className="safety-disclaimer">
-          <span className="warning-icon">⚠️</span>
-          <p>
-            AI may provide inaccurate information. <strong>Always</strong> consult a medical professional for health concerns.
-          </p>
+          <button className="reset-button" onClick={clearChat}>
+            Reset
+          </button>
         </div>
 
         <div className="chat-messages">
           {messages.map((message, index) => (
             <div key={index} className={`message message-${message.type}`}>
-              <div className="message-content">
-                <span className="message-icon">
-                  {message.type === 'bot' ? '🤖' : '👤'}
-                </span>
-                <div className="message-text">
-                  {message.text.split('\n').map((line, i) => (
-                    <div key={i}>{line}</div>
-                  ))}
-                </div>
+              {message.type === 'bot' && <div className="message-avatar">🤖</div>}
+              <div className="message-bubble">
+                {message.text.split('\n').map((line, i) => (
+                  <div key={i}>{line}</div>
+                ))}
               </div>
             </div>
           ))}
+          {messages.length === 1 && (
+            <div className="starter-prompts">
+              <div className="prompts-grid">
+                {sampleQuestions.map((q, i) => (
+                  <button
+                    key={i}
+                    className="starter-prompt-btn"
+                    onClick={() => processMessage(q)}
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {isLoading && (
             <div className="message message-bot">
-              <div className="message-content">
-                <span className="message-icon">🤖</span>
-                <div className="message-text loading"><span></span><span></span><span></span></div>
+              <div className="message-avatar">🤖</div>
+              <div className="message-bubble loading">
+                <span></span><span></span><span></span>
               </div>
             </div>
           )}

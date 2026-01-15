@@ -1,0 +1,128 @@
+.wellness-tools-page {
+  flex: 1;
+  background-color: #fffaeb;
+  min-height: calc(100vh - 80px);
+}
+
+.wellness-hero {
+  background: linear-gradient(135deg, #00bfc3 0%, #009ba7 100%);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.wellness-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+}
+
+.wellness-hero p {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0.95;
+}
+
+.wellness-content {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.features-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+.feature-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 191, 195, 0.1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(0, 191, 195, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00bfc3 0%, #ffb06f 100%);
+}
+
+.feature-card:hover {
+  box-shadow: 0 16px 40px rgba(0, 191, 195, 0.2);
+  transform: translateY(-10px);
+  border-color: rgba(0, 191, 195, 0.2);
+}
+
+.feature-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+.feature-card h3 {
+  color: #2a2929;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+}
+
+.feature-card p {
+  color: #666;
+  line-height: 1.7;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.feature-card-btn {
+  background: linear-gradient(135deg, #00bfc3 0%, #009ba7 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.feature-card-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 191, 195, 0.3);
+}
+
+.feature-card-btn:active {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .wellness-hero {
+    padding: 3rem 1rem;
+  }
+
+  .wellness-hero h1 {
+    font-size: 2rem;
+  }
+
+  .wellness-content {
+    padding: 2rem 1rem;
+  }
+}

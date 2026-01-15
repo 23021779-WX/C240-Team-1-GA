@@ -73,14 +73,20 @@ const AllergenDetective = () => {
     setFeedback(null);
   };
 
+  const progress = Math.round((currentRound / rounds.length) * 100);
+
   return (
     <div className="game-container">
       {gameState === 'start' && (
         <div className="game-card start-screen">
-          <h1>🕵️‍♂️ Allergen Detective</h1>
-          <br />
-          <p>Test your knowledge! Can you spot the hidden allergens in these ingredient lists?</p>
-          <br />
+          <div className="game-badge">🛡️ Safety Drill</div>
+          <h1>Allergen Detective</h1>
+          <p className="game-subtitle">Spot hidden allergens fast and learn safer swaps in under a minute.</p>
+          <div className="game-highlights">
+            <span className="tag">5 quick rounds</span>
+            <span className="tag">Targeted risks</span>
+            <span className="tag">Instant feedback</span>
+          </div>
           <button className="cta-button" onClick={() => setGameState('playing')}>Start Game</button>
         </div>
       )}
@@ -88,13 +94,17 @@ const AllergenDetective = () => {
       {gameState === 'playing' && (
         <div className="game-card">
           <div className="game-header">
-            <span>Round {currentRound + 1} of {rounds.length}</span>
-            <br />
-            <span className="game-score">Score: {score}</span>
+            <span className="chip">Round {currentRound + 1} of {rounds.length}</span>
+            <span className="chip score">Score {score}</span>
+          </div>
+
+          <div className="game-progress">
+            <div className="progress-bar" style={{ width: `${progress}%` }} />
+            <span className="progress-label">{progress}% complete</span>
           </div>
 
           <div className="game-content">
-            <p className="target-label">Target Allergy: <strong style={{ color: '#d63031' }}>{rounds[currentRound].target}</strong></p>
+            <p className="target-label">Target Allergy: <strong className="target-highlight">{rounds[currentRound].target}</strong></p>
             <div className="product-box">
               <h3>{rounds[currentRound].product}</h3>
               <div className="ingredients-list">

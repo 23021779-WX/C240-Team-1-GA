@@ -17,8 +17,9 @@
 
 .contact-header h1 {
   font-size: 2.5rem;
-  color: #2c5aa0;
+  color: #00bfc3;
   margin-bottom: 0.5rem;
+  font-family: 'Poppins', sans-serif;
 }
 
 .contact-header p {
@@ -58,9 +59,10 @@
 }
 
 .info-card h3 {
-  color: #2c5aa0;
+  color: #00bfc3;
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
+  font-family: 'Poppins', sans-serif;
 }
 
 .info-card p {
@@ -71,13 +73,13 @@
 }
 
 .info-card a {
-  color: #667eea;
+  color: #00bfc3;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .info-card a:hover {
-  color: #2c5aa0;
+  color: #009ba7;
   text-decoration: underline;
 }
 
@@ -95,9 +97,10 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #2c5aa0;
+  color: #00bfc3;
   font-weight: 600;
   font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
 }
 
 .form-group input,
