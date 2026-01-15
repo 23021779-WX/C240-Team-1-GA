@@ -4,6 +4,50 @@
   flex-direction: column;
 }
 
+/* Floating Questions Button */
+.floating-questions-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #ffb06f 0%, #ff8a3d 100%);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 8px 24px rgba(255, 176, 111, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.3px;
+}
+
+.floating-questions-btn span:first-child {
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.floating-questions-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(255, 176, 111, 0.5);
+  filter: brightness(1.05);
+}
+
+.floating-questions-btn:active {
+  transform: translateY(-1px);
+}
+
+.floating-questions-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+}
+
 .hero {
   background: linear-gradient(135deg, #00bfc3 0%, #009ba7 100%);
   color: white;
@@ -289,6 +333,21 @@
 }
 
 @media (max-width: 768px) {
+  .floating-questions-btn {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.85rem 1.2rem;
+    font-size: 0.85rem;
+  }
+
+  .floating-questions-btn .btn-text {
+    display: none;
+  }
+
+  .floating-questions-btn span:first-child {
+    font-size: 1.5rem;
+  }
+
   .hero {
     min-height: 100vh;
     padding: 2.5rem 1.25rem;

@@ -11,6 +11,8 @@ function ChatBot() {
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [questionHistory, setQuestionHistory] = useState([])
+  const [showHistory, setShowHistory] = useState(false)
   const messagesEndRef = useRef(null)
 
   const sampleQuestions = [
@@ -31,6 +33,13 @@ function ChatBot() {
     setMessages(prev => [...prev, userMessage])
     setIsLoading(true)
     setIsSidebarOpen(false)
+    setShowHistory(false)
+
+    // Add to history
+    setQuestionHistory(prev => {
+      const newHistory = [text, ...prev.filter(q => q !== text)]
+      return newHistory.slice(0, 10) // Keep only last 10 questions
+    })
 
     try {
       const response = await fetch(
@@ -92,10 +101,45 @@ function ChatBot() {
           <div className="header-content">
             <h1>NOM BOT</h1>
           </div>
-          <button className="reset-button" onClick={clearChat}>
-            Reset
-          </button>
+          <div className="header-buttons">
+            <button 
+              className="history-button" 
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              <span>📝</span> History
+            </button>
+            <button className="reset-button" onClick={clearChat}>
+              Reset
+            </button>
+          </div>
         </div>
+
+        {showHistory && questionHistory.length > 0 && (
+          <div className="history-dropdown">
+            <h3>Previously Asked Questions</h3>
+            <div className="history-list">
+              {questionHistory.map((question, index) => (
+                <button
+                  key={index}
+                  className="history-item"
+                  onClick={() => {
+                    setInputValue(question)
+                    setShowHistory(false)
+                  }}
+                >
+                  <span className="history-icon">↩</span>
+                  <span className="history-text">{question}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showHistory && questionHistory.length === 0 && (
+          <div className="history-dropdown">
+            <p className="no-history">No questions asked yet</p>
+          </div>
+        )}
 
         <div className="chat-messages">
           {messages.map((message, index) => (

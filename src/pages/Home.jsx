@@ -1,10 +1,44 @@
-import React from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import './Home.css'
 import SampleQuestions from '../components/SampleQuestions'
 
 function Home({ setCurrentPage }) {
+  const questionsRef = useRef(null)
+  const [showButton, setShowButton] = useState(true)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowButton(!entry.isIntersecting)
+      },
+      { threshold: 0.1 }
+    )
+
+    if (questionsRef.current) {
+      observer.observe(questionsRef.current)
+    }
+
+    return () => {
+      if (questionsRef.current) {
+        observer.unobserve(questionsRef.current)
+      }
+    }
+  }, [])
+
+  const scrollToQuestions = () => {
+    questionsRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <div className="home">
+      <button 
+        className={`floating-questions-btn ${!showButton ? 'hidden' : ''}`} 
+        onClick={scrollToQuestions}
+      >
+        <span>↓</span>
+        <span className="btn-text">Common Questions</span>
+      </button>
+
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-content">
@@ -61,7 +95,9 @@ function Home({ setCurrentPage }) {
         </button>
       </section>
 
-      <SampleQuestions setCurrentPage={setCurrentPage} />
+      <div ref={questionsRef}>
+        <SampleQuestions setCurrentPage={setCurrentPage} />
+      </div>
     </div>
   )
 }
