@@ -1,0 +1,77 @@
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 20px;
+}
+
+.game-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.product-box {
+  background: #f0f2f5;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+}
+
+.ingredients-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.ingredient-tag {
+  background: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  border: 1px solid #ddd;
+}
+
+.game-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.game-btn {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+
+.game-btn.safe { background: #e8f5e9; color: #2e7d32; }
+.game-btn.danger { background: #ffebee; color: #c62828; }
+.game-btn:hover { transform: translateY(-3px); }
+
+.feedback-box {
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.feedback-box.correct { background: #c8e6c9; color: #1b5e20; }
+.feedback-box.wrong { background: #ffcdd2; color: #b71c1c; }
+
+.final-score {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #667eea;
+  margin: 1rem 0;
+}

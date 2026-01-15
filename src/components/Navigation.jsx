@@ -5,10 +5,16 @@ function Navigation({ currentPage, setCurrentPage }) {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="logo-section">
+        <div className="logo-section" onClick={() => setCurrentPage('home')} style={{cursor: 'pointer'}}>
           <div className="logo-placeholder">
-            <span className="logo-text">🥗</span>
-            <span className="company-name">nomnom-bot</span>
+            <img 
+              src="/nomnom-logo.png" 
+              height="40"
+              width='40'
+              alt="NomNom Bot Logo" 
+              className="nav-logo-img" 
+            />
+            <span className="company-name">nom nom</span>
           </div>
         </div>
 
@@ -20,7 +26,8 @@ function Navigation({ currentPage, setCurrentPage }) {
             >
               Home
             </button>
-          </li>
+          </li> 
+
           <li>
             <button
               className={`nav-link ${currentPage === 'chatbot' ? 'active' : ''}`}
@@ -29,14 +36,14 @@ function Navigation({ currentPage, setCurrentPage }) {
               Chat Bot
             </button>
           </li>
-          {/* <li>
+          <li>
             <button
-              className={`nav-link ${currentPage === 'contact' ? 'active' : ''}`}
-              onClick={() => setCurrentPage('contact')}
+              className={`nav-link ${currentPage === 'understandingAllergies' ? 'active' : ''}`}
+              onClick={() => setCurrentPage('understandingAllergies')}
             >
-              Contact
+              Allergen Game
             </button>
-          </li> */}
+          </li>
         </ul>
       </div>
     </nav>
