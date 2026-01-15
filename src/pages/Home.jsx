@@ -95,6 +95,57 @@ function Home({ setCurrentPage }) {
         </button>
       </section>
 
+      {/* Wellness Tools Section */}
+      <section className="wellness-section">
+        <div className="wellness-header">
+          <h2>Our Tools for Wellness</h2>
+          <p>AI-powered features to help you navigate dietary needs and allergies with confidence</p>
+        </div>
+        <div className="wellness-grid">
+          <div className="wellness-card">
+            <div className="wellness-icon">🔍</div>
+            <h3>Allergy Detection</h3>
+            <p>Learn about potential allergies and foods to avoid based on your symptoms.</p>
+            <button 
+              className="wellness-btn"
+              onClick={() => {
+                localStorage.setItem('prefilledQuestion', 'What are the symptoms of a nut allergy?')
+                setCurrentPage('chatbot')
+              }}
+            >
+              Ask About Allergies
+            </button>
+          </div>
+
+          <div className="wellness-card">
+            <div className="wellness-icon">🥗</div>
+            <h3>Dietary Guidance</h3>
+            <p>Get personalized dietary recommendations for your specific health needs.</p>
+            <button 
+              className="wellness-btn"
+              onClick={() => {
+                localStorage.setItem('prefilledQuestion', 'What are safe food substitutes for common allergies?')
+                setCurrentPage('chatbot')
+              }}
+            >
+              Get Recommendations
+            </button>
+          </div>
+
+          <div className="wellness-card">
+            <div className="wellness-icon">💬</div>
+            <h3>Instant Support</h3>
+            <p>Chat with our AI assistant anytime, anywhere for quick answers.</p>
+            <button 
+              className="wellness-btn"
+              onClick={() => setCurrentPage('chatbot')}
+            >
+              Start Chat
+            </button>
+          </div>
+        </div>
+      </section>
+
       <div ref={questionsRef}>
         <SampleQuestions setCurrentPage={setCurrentPage} />
       </div>

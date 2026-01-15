@@ -26,15 +26,6 @@ function Navigation({ currentPage, setCurrentPage }) {
             >
               Home
             </button>
-          </li> 
-
-          <li>
-            <button
-              className={`nav-link ${currentPage === 'questions' ? 'active' : ''}`}
-              onClick={() => setCurrentPage('questions')}
-            >
-              Wellness Tools
-            </button>
           </li>
 
           <li>

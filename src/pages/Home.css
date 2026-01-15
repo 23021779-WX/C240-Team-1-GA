@@ -389,3 +389,122 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Wellness Section */
+.wellness-section {
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, #0099a8 0%, #006b7f 100%);
+}
+
+.wellness-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.wellness-header h2 {
+  font-size: 2.5rem;
+  color: white;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.wellness-header p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.95);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.wellness-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.wellness-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wellness-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+}
+
+.wellness-icon {
+  font-size: 3rem;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.wellness-card h3 {
+  font-size: 1.4rem;
+  color: #333;
+  margin: 0;
+  font-weight: 700;
+}
+
+.wellness-card p {
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.wellness-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  align-self: flex-start;
+}
+
+.wellness-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.wellness-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .wellness-section {
+    padding: 3rem 1rem;
+  }
+
+  .wellness-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .wellness-grid {
+    gap: 1.5rem;
+  }
+
+  .wellness-card {
+    padding: 1.5rem;
+  }
+}
