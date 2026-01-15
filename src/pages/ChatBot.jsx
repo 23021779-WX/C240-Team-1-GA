@@ -65,12 +65,16 @@ function ChatBot() {
       }
       setMessages(prev => [...prev, botMessage])
       
-      // Check if the response is a meal plan
+      // Check if the response is an actual meal plan (not just mentioning it)
       const responseText = botMessage.text.toLowerCase()
-      if (responseText.includes('meal plan') || 
-          responseText.includes('breakfast') && responseText.includes('lunch') && responseText.includes('dinner') ||
-          responseText.includes('day 1') || responseText.includes('day 2') || responseText.includes('day 3')) {
-        // Show save modal for meal plans
+      const hasMealStructure = (responseText.includes('breakfast') && responseText.includes('lunch') && responseText.includes('dinner'))
+      const hasDayStructure = (responseText.includes('day 1') && responseText.includes('day 2')) || 
+                              (responseText.includes('day 1') && responseText.includes('day 3'))
+      const isLongEnough = botMessage.text.length > 200 // Meal plans are typically longer
+      const isNotQuestion = !responseText.includes('?') || responseText.split('?').length <= 2 // Allow few questions but not primarily questions
+      
+      // Only show save modal if it looks like an actual meal plan
+      if ((hasMealStructure || hasDayStructure) && isLongEnough && isNotQuestion) {
         setPendingMealPlan(botMessage.text)
         setShowSaveModal(true)
       }
