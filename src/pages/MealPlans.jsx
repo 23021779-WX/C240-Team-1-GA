@@ -3,6 +3,9 @@ import './MealPlans.css'
 
 function MealPlans() {
   const [savedMealPlans, setSavedMealPlans] = useState([])
+  const [activeMealTab, setActiveMealTab] = useState({})
+  const [showFoodModal, setShowFoodModal] = useState(false)
+  const [selectedFood, setSelectedFood] = useState(null)
 
   useEffect(() => {
     // Load saved meal plans from localStorage
@@ -11,6 +14,160 @@ function MealPlans() {
       setSavedMealPlans(JSON.parse(stored))
     }
   }, [])
+
+  const openFoodInfo = (foodName) => {
+    setSelectedFood(foodName)
+    setShowFoodModal(true)
+  }
+
+  const closeFoodModal = () => {
+    setShowFoodModal(false)
+    setSelectedFood(null)
+  }
+
+  const askNomBotAboutFood = (foodName) => {
+    const question = `Why is ${foodName} good for me and what are its health benefits?`
+    localStorage.setItem('prefilledQuestion', question)
+    window.location.href = '/nom-bot'
+  }
+
+  const togglePlanExpansion = (index) => {
+    setActiveMealTab(prev => ({
+      ...prev,
+      [index]: prev[index] ? null : 'breakfast'
+    }))
+  }
+
+  const parseMealPlan = (content) => {
+    const mealCategories = {}
+
+    console.log('Parsing meal plan, content length:', content.length)
+
+    const cleanLine = (text) => {
+      return text
+        .replace(/^[-*•\u2022]+\s*/, '') // remove bullet chars
+        .replace(/^:\s*/, '') // remove leading colon
+        .replace(/^\*\*/, '') // leading bold markers
+        .replace(/\*\*$/, '') // trailing bold markers
+        .trim()
+    }
+
+    // First try: split by newlines (for formatted responses)
+    const lines = content.split('\n')
+    let currentMeal = null
+    let foundMeals = false
+    let currentDay = 1
+
+    lines.forEach((line) => {
+      const trimmedLine = line.trim()
+      
+      if (!trimmedLine) return
+
+      // Stop parsing once we reach Day 2+ to avoid mixing days into one card
+      const dayMatch = trimmedLine.match(/^Day\s+(\d+)/i)
+      if (dayMatch) {
+        const dayNum = parseInt(dayMatch[1], 10)
+        if (!isNaN(dayNum) && dayNum > 1) {
+          currentMeal = null
+          return
+        }
+        currentDay = dayNum || 1
+        currentMeal = null
+        return
+      }
+      
+      // Check for meal headers: "Breakfast:", "Lunch:", "Dinner:"
+      const mealMatch = trimmedLine.match(/^(breakfast|lunch|dinner)[:\s-]+(.+)$/i)
+      
+      if (mealMatch) {
+        foundMeals = true
+        currentMeal = mealMatch[1].toLowerCase()
+        if (!mealCategories[currentMeal]) {
+          mealCategories[currentMeal] = []
+        }
+        
+        // Get the full dish with attributes (everything after "Lunch: " or "Dinner: ")
+        const dishPart = mealMatch[2].trim()
+        // Extract just the dish name (everything before the opening parenthesis)
+        const dishName = dishPart.split('(')[0].trim()
+        
+        if (dishName) {
+          mealCategories[currentMeal].push(dishName)
+        }
+      } else if (currentMeal && trimmedLine && !trimmedLine.match(/^(breakfast|lunch|dinner|day\s+\d+)/i)) {
+        // Skip lines that are just attributes or part of previous dish
+        const cleanedLine = cleanLine(trimmedLine)
+        const isDishLine = !cleanedLine.match(/^[A-Z][A-Z]/) && !cleanedLine.match(/^(high|low|rich|lean|omega)/i)
+        if (isDishLine) {
+          const dishName = cleanedLine.split('(')[0].trim()
+          if (dishName && dishName.length > 3) {
+            mealCategories[currentMeal].push(dishName)
+          }
+        }
+      }
+    })
+
+    // If newline parsing didn't work, try inline parsing (split by meal keywords)
+    if (!foundMeals) {
+      console.log('Trying inline parsing...')
+      
+      // Find all meal positions
+      const breakfastIdx = content.toLowerCase().indexOf('breakfast')
+      const lunchIdx = content.toLowerCase().indexOf('lunch')
+      const dinnerIdx = content.toLowerCase().indexOf('dinner')
+
+      // Only use inline parsing for the first day chunk (cut at Day 2 if present)
+      const day2Idx = content.toLowerCase().indexOf('day 2')
+      const sliceEnd = day2Idx !== -1 ? day2Idx : content.length
+
+      if (breakfastIdx !== -1) {
+        const nextMealIdx = Math.min(
+          lunchIdx !== -1 ? lunchIdx : Infinity,
+          dinnerIdx !== -1 ? dinnerIdx : Infinity
+        )
+        const breakfastContent = nextMealIdx === Infinity 
+          ? content.substring(breakfastIdx + 9, sliceEnd)
+          : content.substring(breakfastIdx + 9, Math.min(nextMealIdx, sliceEnd))
+        
+        const items = breakfastContent.split(/Snack:|lunch|dinner/i)[0].trim()
+        if (items) {
+          mealCategories.breakfast = items.split(/[,•\-]/).map(item => {
+            const cleaned = cleanLine(item)
+            return cleaned.replace(/\s*\([^)]*\).*$/i, '').trim()
+          }).filter(Boolean)
+        }
+      }
+
+      if (lunchIdx !== -1) {
+        const nextMealIdx = dinnerIdx !== -1 ? dinnerIdx : Infinity
+        const lunchContent = nextMealIdx === Infinity 
+          ? content.substring(lunchIdx + 5, sliceEnd)
+          : content.substring(lunchIdx + 5, Math.min(nextMealIdx, sliceEnd))
+        
+        const items = lunchContent.split(/Snack:|dinner/i)[0].trim()
+        if (items) {
+          mealCategories.lunch = items.split(/[,•\-]/).map(item => {
+            const cleaned = cleanLine(item)
+            return cleaned.replace(/\s*\([^)]*\).*$/i, '').trim()
+          }).filter(Boolean)
+        }
+      }
+
+      if (dinnerIdx !== -1) {
+        const dinnerContent = content.substring(dinnerIdx + 6, sliceEnd)
+        const items = dinnerContent.split(/Snack:|breakfast|lunch/i)[0].trim()
+        if (items) {
+          mealCategories.dinner = items.split(/[,•\-]/).map(item => {
+            const cleaned = cleanLine(item)
+            return cleaned.replace(/\s*\([^)]*\).*$/i, '').trim()
+          }).filter(Boolean)
+        }
+      }
+    }
+
+    console.log('Final parsed meals:', mealCategories)
+    return mealCategories
+  }
 
   const deleteMealPlan = (index) => {
     const updated = savedMealPlans.filter((_, i) => i !== index)
@@ -46,39 +203,130 @@ function MealPlans() {
           </div>
         ) : (
           <div className="meal-plans-list">
-            {savedMealPlans.map((plan, index) => (
-              <div key={index} className="meal-plan-card">
-                <div className="meal-plan-header">
-                  <div className="meal-plan-date">
-                    <span className="date-icon">📅</span>
-                    {new Date(plan.savedAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
+            {savedMealPlans.map((plan, index) => {
+              const mealCategories = parseMealPlan(plan.content)
+              const activeMeal = activeMealTab[index]
+              const isExpanded = activeMeal !== undefined && activeMeal !== null
+              
+              return (
+                <div key={index} className="meal-plan-card">
+                  <div className="meal-plan-header">
+                    <div className="meal-plan-info">
+                      <span className="date-icon">📅</span>
+                      <div className="meal-plan-date">
+                        {new Date(plan.savedAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                        <span className="meal-plan-time">
+                          {new Date(plan.savedAt).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                    <button 
+                      className="delete-button" 
+                      onClick={() => deleteMealPlan(index)}
+                      title="Delete meal plan"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+
+                  {/* Meal Cards - Click to expand */}
+                  <div className="meals-list">
+                    {['breakfast', 'lunch', 'dinner'].map(meal => {
+                      const isActive = activeMeal === meal
+                      const hasMeals = mealCategories[meal] && mealCategories[meal].length > 0
+                      
+                      if (!hasMeals) return null
+                      
+                      const mealText = mealCategories[meal].join(', ')
+                      
+                      return (
+                        <div key={meal} className="meal-card-wrapper">
+                          <button
+                            className={`meal-card ${isActive ? 'active' : ''}`}
+                            onClick={() => setActiveMealTab(prev => ({
+                              ...prev,
+                              [index]: activeMeal === meal ? null : meal
+                            }))}
+                          >
+                            <div className="meal-card-header">
+                              <span className="meal-card-icon">
+                                {meal === 'breakfast' ? '🌅' : meal === 'lunch' ? '☀️' : '🌙'}
+                              </span>
+                              <div className="meal-card-info">
+                                <h3 className="meal-card-title">{meal.charAt(0).toUpperCase() + meal.slice(1)}</h3>
+                              </div>
+                            </div>
+                            <span className="expand-icon">{isActive ? '▼' : '▶'}</span>
+                          </button>
+
+                          {/* Expanded meal content */}
+                          {isActive && (
+                            <div className="meal-content-box">
+                              <p className="meal-text">{mealText}</p>
+                              <button 
+                                className="ask-about-meal-btn"
+                                onClick={() => openFoodInfo(meal)}
+                                title="Ask about this meal"
+                              >
+                                💡 Learn More
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )
                     })}
                   </div>
-                  <button 
-                    className="delete-button" 
-                    onClick={() => deleteMealPlan(index)}
-                    title="Delete meal plan"
-                  >
-                    🗑️
-                  </button>
-                </div>
-                <div className="meal-plan-content">
-                  {plan.content.split('\n').map((line, i) => (
-                    <div key={i} className="meal-plan-line">
-                      {line}
+
+                  {/* Fallback for unparseable content */}
+                  {isExpanded && activeMeal && !mealCategories[activeMeal] && (
+                    <div className="meal-details">
+                      <p className="no-data-text">No details available for this meal</p>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
+
+      {/* Food Info Modal */}
+      {showFoodModal && selectedFood && (
+        <div className="modal-overlay" onClick={closeFoodModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Why is {selectedFood} good for you?</h2>
+              <button className="modal-close" onClick={closeFoodModal}>✕</button>
+            </div>
+            <div className="modal-body">
+              <p>Click below to ask Nom Bot about the health benefits of <strong>{selectedFood}</strong></p>
+            </div>
+            <div className="modal-footer">
+              <button 
+                className="ask-button"
+                onClick={() => {
+                  askNomBotAboutFood(selectedFood)
+                }}
+              >
+                Ask Nom Bot 🤖
+              </button>
+              <button 
+                className="cancel-button"
+                onClick={closeFoodModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

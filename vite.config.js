@@ -3,4 +3,14 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      '/flowise': {
+        target: 'https://flowise-13ba.onrender.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/flowise/, ''),
+      },
+    },
+  },
 })

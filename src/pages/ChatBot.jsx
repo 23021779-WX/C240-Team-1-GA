@@ -47,41 +47,113 @@ function ChatBot() {
     })
 
     try {
-      const response = await fetch(
-        "https://cloud.flowiseai.com/api/v1/prediction/4cb1a442-92b0-4fd7-9509-62b00935446d",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: text })
-        }
-      )
+      console.log('Sending to Flowise:', text)
+      
+      // Use the Flowise embed library - it handles CORS properly
+      if (window.flowise && window.flywiseConfig) {
+        try {
+          const response = await fetch(`${window.flywiseConfig.apiHost}/api/v1/prediction/${window.flywiseConfig.chatflowid}`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ 
+              question: text
+            })
+          })
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+          const data = await response.json()
+          const responseText = data.text || data.message || "I processed your request."
+          
+          // Check if it's a meal plan
+          const lowerText = responseText.toLowerCase()
+          const hasMealStructure = (lowerText.includes('breakfast') && lowerText.includes('lunch') && lowerText.includes('dinner'))
+          const hasDayStructure = (lowerText.includes('day 1') && lowerText.includes('day 2')) || 
+                                  (lowerText.includes('day 1') && lowerText.includes('day 3'))
+          const isLongEnough = responseText.length > 200
+          const isNotQuestion = !lowerText.includes('?') || lowerText.split('?').length <= 2
+          
+          const isMealPlan = (hasMealStructure || hasDayStructure) && isLongEnough && isNotQuestion
+          
+          const botMessage = {
+            type: 'bot',
+            text: responseText,
+            isMealPlan: isMealPlan,
+            mealPlanContent: isMealPlan ? responseText : null
+          }
+          setMessages(prev => [...prev, botMessage])
+          setIsLoading(false)
+          return
+        } catch (libError) {
+          console.error('Flowise embed library error:', libError)
+          throw libError
+        }
+      }
+      
+      // Fallback to direct API call
+      const chatflowId = "313655ce-146d-4b5b-a60e-fd3d9caafdc9"
+      const apiHost = "/flowise"
+      const apiUrl = `${apiHost}/api/v1/prediction/${chatflowId}`
+      
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        mode: "cors",
+        credentials: "omit",
+        body: JSON.stringify({ 
+          question: text
+        })
+      })
+
+      console.log('Flowise response status:', response.status)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Flowise error response:', errorText)
+        console.error('Flowise URL:', apiUrl)
+        
+        // Show the actual error to the user
+        setMessages(prev => [...prev, { 
+          type: 'bot', 
+          text: `⚠️ Flowise Server Error (${response.status})\n\nThe chatflow is returning an error. This usually means:\n\n1. The chatflow ID might be incorrect or expired\n2. The chatflow isn't deployed in your Flowise dashboard\n3. There's a configuration issue in the chatflow\n\nError details: ${errorText.substring(0, 200)}\n\nPlease check your Flowise dashboard at https://cloud.flowiseai.com and verify:\n- The chatflow exists\n- It's deployed (green status)\n- The ID matches: 4cb1a442-92b0-4fd7-9509-62b00935446d`
+        }])
+        setIsLoading(false)
+        return
+      }
 
       const data = await response.json()
+      console.log('Flowise response data:', data)
+      
+      // Handle different response formats from Flowise
+      const responseText = data.text || data.message || data.json?.text || "I processed your request but didn't get a text response."
+      
       const botMessage = {
         type: 'bot',
-        text: data.text || data.json || "I processed your request but didn't get a text response."
+        text: typeof responseText === 'string' ? responseText : JSON.stringify(responseText)
       }
       setMessages(prev => [...prev, botMessage])
       
-      // Check if the response is an actual meal plan (not just mentioning it)
-      const responseText = botMessage.text.toLowerCase()
-      const hasMealStructure = (responseText.includes('breakfast') && responseText.includes('lunch') && responseText.includes('dinner'))
-      const hasDayStructure = (responseText.includes('day 1') && responseText.includes('day 2')) || 
-                              (responseText.includes('day 1') && responseText.includes('day 3'))
-      const isLongEnough = botMessage.text.length > 200 // Meal plans are typically longer
-      const isNotQuestion = !responseText.includes('?') || responseText.split('?').length <= 2 // Allow few questions but not primarily questions
+      // Check if the response is an actual meal plan
+      const lowerText = botMessage.text.toLowerCase()
+      const hasMealStructure = (lowerText.includes('breakfast') && lowerText.includes('lunch') && lowerText.includes('dinner'))
+      const hasDayStructure = (lowerText.includes('day 1') && lowerText.includes('day 2')) || 
+                              (lowerText.includes('day 1') && lowerText.includes('day 3'))
+      const isLongEnough = botMessage.text.length > 200
+      const isNotQuestion = !lowerText.includes('?') || lowerText.split('?').length <= 2
       
-      // Only show save modal if it looks like an actual meal plan
       if ((hasMealStructure || hasDayStructure) && isLongEnough && isNotQuestion) {
         setPendingMealPlan(botMessage.text)
         setShowSaveModal(true)
       }
     } catch (error) {
+      console.error('Flowise API error:', error)
+      
       setMessages(prev => [...prev, { 
         type: 'bot', 
-        text: "I'm having trouble connecting to the server. Please try again later." 
+        text: `❌ Connection Error\n\nUnable to reach the Flowise server. Please make sure:\n\n1. Your Flowise server is running at https://flowise-13ba.onrender.com\n2. The chatflow ID is correct: 4cb1a442-92b0-4fd7-9509-62b00935446d\n3. The chatflow is deployed in your Flowise dashboard\n\nError: ${error.message}`
       }])
     } finally {
       setIsLoading(false)
@@ -255,6 +327,18 @@ function ChatBot() {
                       title="Edit message"
                     >
                       ✏️
+                    </button>
+                  )}
+                  {message.isMealPlan && message.type === 'bot' && (
+                    <button 
+                      className="save-meal-plan-button"
+                      onClick={() => {
+                        setPendingMealPlan(message.mealPlanContent)
+                        setShowSaveModal(true)
+                      }}
+                      title="Save this meal plan"
+                    >
+                      💾 Save Meal Plan
                     </button>
                   )}
                 </div>
