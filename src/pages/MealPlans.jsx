@@ -76,8 +76,8 @@ function MealPlans() {
         return
       }
       
-      // Check for meal headers: "Breakfast:", "Lunch:", "Dinner:"
-      const mealMatch = trimmedLine.match(/^(breakfast|lunch|dinner)[:\s-]+(.+)$/i)
+      // Check for meal headers: "Breakfast:", "Lunch:", "Dinner:", "Snack:"
+      const mealMatch = trimmedLine.match(/^(breakfast|lunch|dinner|snack)[:\s-]+(.+)$/i)
       
       if (mealMatch) {
         foundMeals = true
@@ -94,7 +94,7 @@ function MealPlans() {
         if (dishName) {
           mealCategories[currentMeal].push(dishName)
         }
-      } else if (currentMeal && trimmedLine && !trimmedLine.match(/^(breakfast|lunch|dinner|day\s+\d+)/i)) {
+      } else if (currentMeal && trimmedLine && !trimmedLine.match(/^(breakfast|lunch|dinner|snack|day\s+\d+)/i)) {
         // Skip lines that are just attributes or part of previous dish
         const cleanedLine = cleanLine(trimmedLine)
         const isDishLine = !cleanedLine.match(/^[A-Z][A-Z]/) && !cleanedLine.match(/^(high|low|rich|lean|omega)/i)
@@ -115,6 +115,7 @@ function MealPlans() {
       const breakfastIdx = content.toLowerCase().indexOf('breakfast')
       const lunchIdx = content.toLowerCase().indexOf('lunch')
       const dinnerIdx = content.toLowerCase().indexOf('dinner')
+      const snackIdx = content.toLowerCase().indexOf('snack')
 
       // Only use inline parsing for the first day chunk (cut at Day 2 if present)
       const day2Idx = content.toLowerCase().indexOf('day 2')
@@ -123,7 +124,8 @@ function MealPlans() {
       if (breakfastIdx !== -1) {
         const nextMealIdx = Math.min(
           lunchIdx !== -1 ? lunchIdx : Infinity,
-          dinnerIdx !== -1 ? dinnerIdx : Infinity
+          dinnerIdx !== -1 ? dinnerIdx : Infinity,
+          snackIdx !== -1 ? snackIdx : Infinity
         )
         const breakfastContent = nextMealIdx === Infinity 
           ? content.substring(breakfastIdx + 9, sliceEnd)
@@ -139,7 +141,10 @@ function MealPlans() {
       }
 
       if (lunchIdx !== -1) {
-        const nextMealIdx = dinnerIdx !== -1 ? dinnerIdx : Infinity
+        const nextMealIdx = Math.min(
+          dinnerIdx !== -1 ? dinnerIdx : Infinity,
+          snackIdx !== -1 ? snackIdx : Infinity
+        )
         const lunchContent = nextMealIdx === Infinity 
           ? content.substring(lunchIdx + 5, sliceEnd)
           : content.substring(lunchIdx + 5, Math.min(nextMealIdx, sliceEnd))
@@ -154,13 +159,64 @@ function MealPlans() {
       }
 
       if (dinnerIdx !== -1) {
-        const dinnerContent = content.substring(dinnerIdx + 6, sliceEnd)
-        const items = dinnerContent.split(/Snack:|breakfast|lunch/i)[0].trim()
-        if (items) {
-          mealCategories.dinner = items.split(/[,•\-]/).map(item => {
-            const cleaned = cleanLine(item)
-            return cleaned.replace(/\s*\([^)]*\).*$/i, '').trim()
-          }).filter(Boolean)
+        const nextMealIdx = snackIdx !== -1 ? snackIdx : Infinity
+        const dinnerContent = nextMealIdx === Infinity 
+          ? content.substring(dinnerIdx + 6, sliceEnd)
+          : content.substring(dinnerIdx + 6, Math.min(nextMealIdx, sliceEnd))
+        
+        let dinnerText = dinnerContent.split(/Snack:|breakfast|lunch|note:|notes:/i)[0].trim()
+        
+        if (dinnerText) {
+          // Split by comma first
+          let dinners = dinnerText.split(',').map(item => cleanLine(item)).filter(Boolean)
+          
+          // Filter: remove items that start with disclaimer keywords OR are too long
+          dinners = dinners.filter(item => {
+            const lower = item.toLowerCase()
+            const len = item.length
+            
+            // Remove if starts with disclaimer
+            if (lower.match(/^(this|however|please|unfortunately|i'm sorry|note|includes|provides|stay)/)) return false
+            
+            // Remove if too long (disclaimers are usually long)
+            if (len > 100) return false
+            
+            // Remove very short items
+            if (len < 3) return false
+            
+            return true
+          })
+          
+          mealCategories.dinner = dinners
+        }
+      }
+
+      if (snackIdx !== -1) {
+        const snackContent = content.substring(snackIdx + 5, sliceEnd)
+        let snackText = snackContent.split(/breakfast|lunch|dinner|note:|notes:/i)[0].trim()
+        
+        if (snackText) {
+          // Split by comma first
+          let snacks = snackText.split(',').map(item => cleanLine(item)).filter(Boolean)
+          
+          // Filter: remove items that start with disclaimer keywords OR are too long
+          snacks = snacks.filter(item => {
+            const lower = item.toLowerCase()
+            const len = item.length
+            
+            // Remove if starts with disclaimer
+            if (lower.match(/^(this|however|please|unfortunately|i'm sorry|note|includes|provides|stay)/)) return false
+            
+            // Remove if too long (disclaimers are usually long)
+            if (len > 100) return false
+            
+            // Remove very short items
+            if (len < 3) return false
+            
+            return true
+          })
+          
+          mealCategories.snack = snacks
         }
       }
     }
@@ -238,7 +294,7 @@ function MealPlans() {
 
                   {/* Meal Cards - Click to expand */}
                   <div className="meals-list">
-                    {['breakfast', 'lunch', 'dinner'].map(meal => {
+                    {['breakfast', 'lunch', 'dinner', 'snack'].map(meal => {
                       const isActive = activeMeal === meal
                       const hasMeals = mealCategories[meal] && mealCategories[meal].length > 0
                       
@@ -257,7 +313,7 @@ function MealPlans() {
                           >
                             <div className="meal-card-header">
                               <span className="meal-card-icon">
-                                {meal === 'breakfast' ? '🌅' : meal === 'lunch' ? '☀️' : '🌙'}
+                                {meal === 'breakfast' ? '🌅' : meal === 'lunch' ? '☀️' : meal === 'dinner' ? '🌙' : '🍎'}
                               </span>
                               <div className="meal-card-info">
                                 <h3 className="meal-card-title">{meal.charAt(0).toUpperCase() + meal.slice(1)}</h3>

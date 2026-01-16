@@ -2,12 +2,35 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import './ChatBot.css'
 
 function ChatBot() {
-  const [messages, setMessages] = useState([
-    {
-      type: 'bot',
-      text: "Hi! I am Nom Nom. I am here to help you eat safely and feel your best. What are we looking at today?"
+  // Simple markdown parser for formatting
+  const parseMarkdown = (text) => {
+    let html = text
+    // Bold: **text** -> <strong>text</strong>
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Italic: *text* -> <em>text</em>
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Bullet points: • or - at start of line
+    html = html.replace(/^[•\-]\s+(.+)/gm, '<li>$1</li>')
+    // Wrap consecutive <li> in <ul>
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    return html
+  }
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = localStorage.getItem('chatMessages')
+    if (savedMessages) {
+      try {
+        return JSON.parse(savedMessages)
+      } catch (e) {
+        console.error('Failed to parse saved messages:', e)
+      }
     }
-  ])
+    return [
+      {
+        type: 'bot',
+        text: "Hi! I am Nom Nom. I am here to help you eat safely and feel your best. What are we looking at today?"
+      }
+    ]
+  })
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -29,6 +52,11 @@ function ChatBot() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('chatMessages', JSON.stringify(messages))
   }, [messages])
 
   const processMessage = useCallback(async (text) => {
@@ -80,13 +108,13 @@ function ChatBot() {
           
           // Check if it's a meal plan
           const lowerText = responseText.toLowerCase()
-          const hasMealStructure = (lowerText.includes('breakfast') && lowerText.includes('lunch') && lowerText.includes('dinner'))
-          const hasDayStructure = (lowerText.includes('day 1') && lowerText.includes('day 2')) || 
-                                  (lowerText.includes('day 1') && lowerText.includes('day 3'))
+          const hasMealStructure = (lowerText.includes('breakfast') || lowerText.includes('lunch') || lowerText.includes('dinner') || lowerText.includes('snack'))
+          const hasDayStructure = (lowerText.includes('day 1') || lowerText.includes('day 2') || lowerText.includes('day 3'))
+          const hasMultipleMeals = (lowerText.match(/breakfast|lunch|dinner|snack/g) || []).length >= 3
           const isLongEnough = responseText.length > 200
           const isNotQuestion = !lowerText.includes('?') || lowerText.split('?').length <= 2
           
-          const isMealPlan = (hasMealStructure || hasDayStructure) && isLongEnough && isNotQuestion
+          const isMealPlan = (hasMealStructure && hasMultipleMeals && hasDayStructure) && isLongEnough && isNotQuestion
           
           const botMessage = {
             type: 'bot',
@@ -185,13 +213,13 @@ Notes: No nuts included. Swap proteins as needed and adjust portions to your goa
       
       // Check if the response is an actual meal plan
       const lowerText = botMessage.text.toLowerCase()
-      const hasMealStructure = (lowerText.includes('breakfast') && lowerText.includes('lunch') && lowerText.includes('dinner'))
-      const hasDayStructure = (lowerText.includes('day 1') && lowerText.includes('day 2')) || 
-                              (lowerText.includes('day 1') && lowerText.includes('day 3'))
+      const hasMealStructure = (lowerText.includes('breakfast') || lowerText.includes('lunch') || lowerText.includes('dinner') || lowerText.includes('snack'))
+      const hasDayStructure = (lowerText.includes('day 1') || lowerText.includes('day 2') || lowerText.includes('day 3'))
+      const hasMultipleMeals = (lowerText.match(/breakfast|lunch|dinner|snack/g) || []).length >= 3
       const isLongEnough = botMessage.text.length > 200
       const isNotQuestion = !lowerText.includes('?') || lowerText.split('?').length <= 2
       
-      if ((hasMealStructure || hasDayStructure) && isLongEnough && isNotQuestion) {
+      if ((hasMealStructure && hasMultipleMeals && hasDayStructure) && isLongEnough && isNotQuestion) {
         setPendingMealPlan(botMessage.text)
         setShowSaveModal(true)
       }
@@ -217,10 +245,12 @@ Notes: No nuts included. Swap proteins as needed and adjust portions to your goa
 
   // Clear Chat Function
   const clearChat = () => {
-    setMessages([{
+    const initialMessage = [{
       type: 'bot',
       text: "Hi! I am Nom Nom. I am here to help you eat safely and feel your best. What are we looking at today?"
-    }])
+    }]
+    setMessages(initialMessage)
+    localStorage.setItem('chatMessages', JSON.stringify(initialMessage))
     setIsSidebarOpen(false)
   }
 
@@ -365,7 +395,10 @@ Notes: No nuts included. Swap proteins as needed and adjust portions to your goa
               ) : (
                 <div className="message-bubble">
                   {message.text.split('\n').map((line, i) => (
-                    <div key={i}>{line}</div>
+                    <div 
+                      key={i} 
+                      dangerouslySetInnerHTML={{ __html: parseMarkdown(line) }}
+                    />
                   ))}
                   {message.type === 'user' && (
                     <button 
