@@ -40,6 +40,7 @@ function MealPlans() {
 
   const parseMealPlan = (content) => {
     const mealCategories = {}
+    let mealPlanNote = ''
 
     console.log('Parsing meal plan, content length:', content.length)
 
@@ -52,6 +53,12 @@ function MealPlans() {
         .trim()
     }
 
+    // Extract note FIRST if it exists
+    const noteMatch = content.match(/Note:\s*([\s\S]+?)(?=Day\s+2|$)/i)
+    if (noteMatch) {
+      mealPlanNote = noteMatch[1].trim()
+    }
+
     // First try: split by newlines (for formatted responses)
     const lines = content.split('\n')
     let currentMeal = null
@@ -62,6 +69,9 @@ function MealPlans() {
       const trimmedLine = line.trim()
       
       if (!trimmedLine) return
+      
+      // Skip note lines
+      if (trimmedLine.match(/^Note:/i)) return
 
       // Stop parsing once we reach Day 2+ to avoid mixing days into one card
       const dayMatch = trimmedLine.match(/^Day\s+(\d+)/i)
@@ -116,10 +126,12 @@ function MealPlans() {
       const lunchIdx = content.toLowerCase().indexOf('lunch')
       const dinnerIdx = content.toLowerCase().indexOf('dinner')
       const snackIdx = content.toLowerCase().indexOf('snack')
+      const noteIdx = content.toLowerCase().indexOf('note:')
 
-      // Only use inline parsing for the first day chunk (cut at Day 2 if present)
+      // Cut at Note: or Day 2 - whichever comes first
       const day2Idx = content.toLowerCase().indexOf('day 2')
-      const sliceEnd = day2Idx !== -1 ? day2Idx : content.length
+      const cutPoints = [noteIdx, day2Idx].filter(idx => idx !== -1)
+      const sliceEnd = cutPoints.length > 0 ? Math.min(...cutPoints) : content.length
 
       if (breakfastIdx !== -1) {
         const nextMealIdx = Math.min(
@@ -128,6 +140,7 @@ function MealPlans() {
           snackIdx !== -1 ? snackIdx : Infinity
         )
         const breakfastContent = nextMealIdx === Infinity 
+
           ? content.substring(breakfastIdx + 9, sliceEnd)
           : content.substring(breakfastIdx + 9, Math.min(nextMealIdx, sliceEnd))
         
@@ -149,7 +162,7 @@ function MealPlans() {
           ? content.substring(lunchIdx + 5, sliceEnd)
           : content.substring(lunchIdx + 5, Math.min(nextMealIdx, sliceEnd))
         
-        const items = lunchContent.split(/Snack:|dinner/i)[0].trim()
+        const items = lunchContent.split(/Snack:|dinner|note:/i)[0].trim()
         if (items) {
           mealCategories.lunch = items.split(/[,•\-]/).map(item => {
             const cleaned = cleanLine(item)
@@ -167,26 +180,10 @@ function MealPlans() {
         let dinnerText = dinnerContent.split(/Snack:|breakfast|lunch|note:|notes:/i)[0].trim()
         
         if (dinnerText) {
-          // Split by comma first
-          let dinners = dinnerText.split(',').map(item => cleanLine(item)).filter(Boolean)
-          
-          // Filter: remove items that start with disclaimer keywords OR are too long
-          dinners = dinners.filter(item => {
-            const lower = item.toLowerCase()
-            const len = item.length
-            
-            // Remove if starts with disclaimer
-            if (lower.match(/^(this|however|please|unfortunately|i'm sorry|note|includes|provides|stay)/)) return false
-            
-            // Remove if too long (disclaimers are usually long)
-            if (len > 100) return false
-            
-            // Remove very short items
-            if (len < 3) return false
-            
-            return true
-          })
-          
+          let dinners = dinnerText.split(',').map(item => {
+            const cleaned = cleanLine(item).trim()
+            return cleaned
+          }).filter(item => item && item.length > 2)
           mealCategories.dinner = dinners
         }
       }
@@ -196,33 +193,17 @@ function MealPlans() {
         let snackText = snackContent.split(/breakfast|lunch|dinner|note:|notes:/i)[0].trim()
         
         if (snackText) {
-          // Split by comma first
-          let snacks = snackText.split(',').map(item => cleanLine(item)).filter(Boolean)
-          
-          // Filter: remove items that start with disclaimer keywords OR are too long
-          snacks = snacks.filter(item => {
-            const lower = item.toLowerCase()
-            const len = item.length
-            
-            // Remove if starts with disclaimer
-            if (lower.match(/^(this|however|please|unfortunately|i'm sorry|note|includes|provides|stay)/)) return false
-            
-            // Remove if too long (disclaimers are usually long)
-            if (len > 100) return false
-            
-            // Remove very short items
-            if (len < 3) return false
-            
-            return true
-          })
-          
+          let snacks = snackText.split(',').map(item => {
+            const cleaned = cleanLine(item).trim()
+            return cleaned
+          }).filter(item => item && item.length > 2)
           mealCategories.snack = snacks
         }
       }
     }
 
     console.log('Final parsed meals:', mealCategories)
-    return mealCategories
+    return { meals: mealCategories, note: mealPlanNote }
   }
 
   const deleteMealPlan = (index) => {
@@ -260,7 +241,9 @@ function MealPlans() {
         ) : (
           <div className="meal-plans-list">
             {savedMealPlans.map((plan, index) => {
-              const mealCategories = parseMealPlan(plan.content)
+              const parsedPlan = parseMealPlan(plan.content)
+              const mealCategories = parsedPlan.meals
+              const noteText = parsedPlan.note
               const activeMeal = activeMealTab[index]
               const isExpanded = activeMeal !== undefined && activeMeal !== null
               
@@ -344,6 +327,13 @@ function MealPlans() {
                   {isExpanded && activeMeal && !mealCategories[activeMeal] && (
                     <div className="meal-details">
                       <p className="no-data-text">No details available for this meal</p>
+                    </div>
+                  )}
+
+                  {/* Note section at bottom */}
+                  {noteText && (
+                    <div className="meal-plan-note">
+                      <p><strong>Note:</strong> {noteText}</p>
                     </div>
                   )}
                 </div>

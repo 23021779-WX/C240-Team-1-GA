@@ -512,3 +512,23 @@
     font-size: 1.5rem;
   }
 }
+
+/* Meal Plan Note Section */
+.meal-plan-note {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f5f5f5;
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+.meal-plan-note p {
+  margin: 0;
+}
+
+.meal-plan-note strong {
+  color: #667eea;
+}
