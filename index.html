@@ -11,10 +11,16 @@
     <script type="module" src="/src/main.jsx"></script>
     <script>
       window.flywiseConfig = {
-        chatflowid: "313655ce-146d-4b5b-a60e-fd3d9caafdc9",
-        apiHost: "/flowise"
+        chatflowid: "f37aaaad-6e49-4f36-bd36-f534f7bf2b81",
+        apiHost: "https://flowise-13ba.onrender.com"
       }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"></script>
+    <script type="module">
+      import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+      Chatbot.init({
+        chatflowid: "f37aaaad-6e49-4f36-bd36-f534f7bf2b81",
+        apiHost: "https://flowise-13ba.onrender.com",
+      })
+    </script>
   </body>
 </html>

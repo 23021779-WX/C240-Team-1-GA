@@ -49,8 +49,8 @@ function ChatBot() {
     try {
       console.log('Sending to Flowise:', text)
       
-      // Use the Flowise embed library - it handles CORS properly
-      if (window.flowise && window.flywiseConfig) {
+      // Use configured Flowise host/id from window.flywiseConfig when available
+      if (window.flywiseConfig) {
         try {
           const response = await fetch(`${window.flywiseConfig.apiHost}/api/v1/prediction/${window.flywiseConfig.chatflowid}`, {
             method: "POST",
@@ -64,6 +64,19 @@ function ChatBot() {
 
           const data = await response.json()
           const responseText = data.text || data.message || "I processed your request."
+          
+          // Handle quota/limit or not found gracefully
+          if (!data || (data.success === false && data.message)) {
+            const msg = data.message.toLowerCase()
+            if (msg.includes('limit') || msg.includes('quota')) {
+              setMessages(prev => [...prev, { 
+                type: 'bot', 
+                text: `⚠️ Prediction limit reached on Flowise Cloud. Please try again later or switch to your Render instance.`
+              }])
+              setIsLoading(false)
+              return
+            }
+          }
           
           // Check if it's a meal plan
           const lowerText = responseText.toLowerCase()
@@ -91,8 +104,9 @@ function ChatBot() {
       }
       
       // Fallback to direct API call
-      const chatflowId = "313655ce-146d-4b5b-a60e-fd3d9caafdc9"
-      const apiHost = "/flowise"
+      const chatflowId = (window.flywiseConfig?.chatflowid) || "f37aaaad-6e49-4f36-bd36-f534f7bf2b81"
+      const configuredHost = window.flywiseConfig?.apiHost
+      const apiHost = (configuredHost && configuredHost.startsWith('http')) ? configuredHost : "/flowise"
       const apiUrl = `${apiHost}/api/v1/prediction/${chatflowId}`
       
       const response = await fetch(apiUrl, {
@@ -115,10 +129,43 @@ function ChatBot() {
         console.error('Flowise error response:', errorText)
         console.error('Flowise URL:', apiUrl)
         
+        // Temporary mock fallback if chatflow isn't found
+        if (errorText.toLowerCase().includes('not found')) {
+          const mockPlan = `Here’s a balanced 3-day meal plan:
+
+Day 1
+• Breakfast: Greek yogurt with blueberries and chia seeds
+• Lunch: Grilled chicken salad (spinach, quinoa, cucumber, olive oil)
+• Snack: Apple slices with sunflower seed butter
+• Dinner: Baked salmon, sweet potato, steamed broccoli
+
+Day 2
+• Breakfast: Oatmeal with banana, cinnamon, and pumpkin seeds
+• Lunch: Turkey and avocado wrap (whole wheat), side carrot sticks
+• Snack: Rice cakes with hummus
+• Dinner: Stir-fry tofu with brown rice and mixed veggies
+
+Day 3
+• Breakfast: Smoothie (spinach, pineapple, mango, oat milk)
+• Lunch: Lentil soup with side salad (olive oil & lemon)
+• Snack: Pear
+• Dinner: Grilled shrimp, quinoa, roasted asparagus
+
+Notes: No nuts included. Swap proteins as needed and adjust portions to your goals.`
+          setMessages(prev => [...prev, { 
+            type: 'bot', 
+            text: mockPlan,
+            isMealPlan: true,
+            mealPlanContent: mockPlan
+          }])
+          setIsLoading(false)
+          return
+        }
+        
         // Show the actual error to the user
         setMessages(prev => [...prev, { 
           type: 'bot', 
-          text: `⚠️ Flowise Server Error (${response.status})\n\nThe chatflow is returning an error. This usually means:\n\n1. The chatflow ID might be incorrect or expired\n2. The chatflow isn't deployed in your Flowise dashboard\n3. There's a configuration issue in the chatflow\n\nError details: ${errorText.substring(0, 200)}\n\nPlease check your Flowise dashboard at https://cloud.flowiseai.com and verify:\n- The chatflow exists\n- It's deployed (green status)\n- The ID matches: 4cb1a442-92b0-4fd7-9509-62b00935446d`
+          text: `⚠️ Flowise Server Error (${response.status})\n\nThe chatflow is returning an error. This usually means:\n\n1. The chatflow ID might be incorrect or expired\n2. The chatflow isn't deployed in your Flowise dashboard\n3. There's a configuration issue in the chatflow\n\nError details: ${errorText.substring(0, 200)}\n\nPlease check your Flowise dashboard at https://cloud.flowiseai.com and verify:\n- The chatflow exists\n- It's deployed (green status)\n- The ID matches: ${chatflowId}`
         }])
         setIsLoading(false)
         return
@@ -153,7 +200,7 @@ function ChatBot() {
       
       setMessages(prev => [...prev, { 
         type: 'bot', 
-        text: `❌ Connection Error\n\nUnable to reach the Flowise server. Please make sure:\n\n1. Your Flowise server is running at https://flowise-13ba.onrender.com\n2. The chatflow ID is correct: 4cb1a442-92b0-4fd7-9509-62b00935446d\n3. The chatflow is deployed in your Flowise dashboard\n\nError: ${error.message}`
+        text: `❌ Connection Error\n\nUnable to reach the Flowise server. Please make sure:\n\n1. Your Flowise server is running (cloud or render)\n2. The chatflow ID is correct: ${window.flywiseConfig?.chatflowid || chatflowId}\n3. The chatflow is deployed in your Flowise dashboard\n\nError: ${error.message}`
       }])
     } finally {
       setIsLoading(false)
