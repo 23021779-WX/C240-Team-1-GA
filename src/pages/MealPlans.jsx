@@ -6,6 +6,7 @@ function MealPlans() {
   const [activeMealTab, setActiveMealTab] = useState({})
   const [showFoodModal, setShowFoodModal] = useState(false)
   const [selectedFood, setSelectedFood] = useState(null)
+  const [selectedMealOptions, setSelectedMealOptions] = useState(null)
 
   useEffect(() => {
     // Load saved meal plans from localStorage
@@ -15,20 +16,23 @@ function MealPlans() {
     }
   }, [])
 
-  const openFoodInfo = (foodName) => {
-    setSelectedFood(foodName)
+  const openFoodInfo = (mealOptions) => {
+    setSelectedMealOptions(mealOptions)
+    setSelectedFood(null)
     setShowFoodModal(true)
   }
 
   const closeFoodModal = () => {
     setShowFoodModal(false)
     setSelectedFood(null)
+    setSelectedMealOptions(null)
   }
 
   const askNomBotAboutFood = (foodName) => {
     const question = `Why is ${foodName} good for me and what are its health benefits?`
     localStorage.setItem('prefilledQuestion', question)
-    window.location.href = '/nom-bot'
+    // Navigate to home with chatbot parameter
+    window.location.href = '/?page=chatbot'
   }
 
   const togglePlanExpansion = (index) => {
@@ -309,13 +313,15 @@ function MealPlans() {
                           {isActive && (
                             <div className="meal-content-box">
                               <p className="meal-text">{mealText}</p>
-                              <button 
-                                className="ask-about-meal-btn"
-                                onClick={() => openFoodInfo(meal)}
-                                title="Ask about this meal"
-                              >
-                                💡 Learn More
-                              </button>
+                              {mealCategories[meal] && mealCategories[meal].length > 0 && (
+                                <button 
+                                  className="ask-about-meal-btn"
+                                  onClick={() => openFoodInfo(mealCategories[meal])}
+                                  title="Ask about this meal"
+                                >
+                                  💡 Learn More
+                                </button>
+                              )}
                             </div>
                           )}
                         </div>
@@ -344,25 +350,45 @@ function MealPlans() {
       </div>
 
       {/* Food Info Modal */}
-      {showFoodModal && selectedFood && (
+      {showFoodModal && selectedMealOptions && selectedMealOptions.length > 0 && (
         <div className="modal-overlay" onClick={closeFoodModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Why is {selectedFood} good for you?</h2>
+              <h2>Learn More About These Foods</h2>
               <button className="modal-close" onClick={closeFoodModal}>✕</button>
             </div>
             <div className="modal-body">
-              <p>Click below to ask Nom Bot about the health benefits of <strong>{selectedFood}</strong></p>
+              <p>Select which food you'd like to know more about:</p>
+              <div className="food-options-list">
+                {selectedMealOptions.map((food, idx) => (
+                  <button
+                    key={idx}
+                    className="food-option-btn"
+                    onClick={() => {
+                      setSelectedFood(food)
+                    }}
+                  >
+                    {food}
+                  </button>
+                ))}
+              </div>
+              {selectedFood && (
+                <div className="selected-food-info">
+                  <p>Click below to ask Nom Bot about the health benefits of <strong>{selectedFood}</strong></p>
+                </div>
+              )}
             </div>
             <div className="modal-footer">
-              <button 
-                className="ask-button"
-                onClick={() => {
-                  askNomBotAboutFood(selectedFood)
-                }}
-              >
-                Ask Nom Bot 🤖
-              </button>
+              {selectedFood && (
+                <button 
+                  className="ask-button"
+                  onClick={() => {
+                    askNomBotAboutFood(selectedFood)
+                  }}
+                >
+                  Ask Nom Bot 🤖
+                </button>
+              )}
               <button 
                 className="cancel-button"
                 onClick={closeFoodModal}

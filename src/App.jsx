@@ -10,7 +10,11 @@ import UnderstandingAllergies from './pages/UnderstandingAllergies'
 import MealPlans from './pages/MealPlans' 
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home')
+  const [currentPage, setCurrentPage] = useState(() => {
+    // Check URL for page parameter
+    const params = new URLSearchParams(window.location.search)
+    return params.get('page') || 'home'
+  })
 
   const renderPage = () => {
     switch (currentPage) {
