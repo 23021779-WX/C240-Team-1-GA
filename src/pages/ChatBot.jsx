@@ -104,7 +104,7 @@ function ChatBot() {
       }
       
       // Fallback to direct API call
-      const chatflowId = (window.flywiseConfig?.chatflowid) || "f37aaaad-6e49-4f36-bd36-f534f7bf2b81"
+      const chatflowId = (window.flywiseConfig?.chatflowid) || "5adbce9b-ad32-4f17-b9e5-10dbc8f77d8f"
       const configuredHost = window.flywiseConfig?.apiHost
       const apiHost = (configuredHost && configuredHost.startsWith('http')) ? configuredHost : "/flowise"
       const apiUrl = `${apiHost}/api/v1/prediction/${chatflowId}`

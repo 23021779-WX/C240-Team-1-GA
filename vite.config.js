@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/flowise': {
-        target: 'https://flowise-13ba.onrender.com',
+        target: 'https://cloud.flowiseai.com',
         changeOrigin: true,
         secure: true,
         rewrite: (path) => path.replace(/^\/flowise/, ''),
